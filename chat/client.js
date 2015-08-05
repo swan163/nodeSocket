@@ -49,16 +49,21 @@
 			//新加入用户的信息
 			var user = o.user;
 				
-			//更新在线人数
-			var userhtml = '';
+			//更新在线人数 userName
+			var userhtml = document.createElement('span');
+			userhtml.className = 'userName';
 			var separator = '';
 			for(key in onlineUsers) {
 		        if(onlineUsers.hasOwnProperty(key)){
-					userhtml += separator+onlineUsers[key];
+					// userhtml += separator+onlineUsers[key];
+					userhtml.innerHTML += separator+onlineUsers[key];
 					separator = '、';
 				}
 		    }
-			d.getElementById("onlinecount").innerHTML = '当前共有 '+onlineCount+' 人在线，在线列表：'+userhtml;
+		    console.log(userhtml)
+			// d.getElementById("onlinecount").innerHTML = '当前共有 '+ onlineCount +' 人在线，在线列表：' + userhtml;
+			d.getElementById("onlinecount").innerHTML = '当前共有 '+ onlineCount +' 人在线，在线列表：';
+			d.getElementById("onlinecount").appendChild(userhtml)
 			
 			//添加系统消息
 			var html = '';
