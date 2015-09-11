@@ -13,11 +13,14 @@
 </head>
 <body>
 
-<div id="loginbox">
-	<div style="width:260px;margin:200px auto;">
+<div id="loginbox" style="">
+	<div style="width:360px;margin:200px auto;">
 		请先输入你在聊天室的昵称<br/><br/>
 		<input type="text" style="width:180px;" placeholder="请输入用户名" id="username" name="username" />
-		<input type="button" style="width:50px;" value="提交" onclick="CHAT.usernameSubmit();"/>
+		<!-- <input type="button" style="width:50px;" value="提交" onclick="CHAT.usernameSubmit();"/> -->
+		<span onclick="CHAT.usernameSubmit();" style="width:50px;">登 录</span>
+		<!-- <input type="button" style="width:80px;" value="注册"> -->
+		<span style="width:80px;" id="registBtn">注册</span>
 	</div>
 </div>
 
@@ -31,7 +34,24 @@
 	<div id="doc">
 		<div id="chat">
 			<div id="message" class="message">
-				<div id="onlinecount" style="width:background:#EFEFF4; font-size:12px; margin-top:10px; margin-left:10px; color:#666;"></div>
+				<div id="onlinecount">
+					<!-- <p class="lis-title">群成员(100/261)</p>
+					<span class="userName">
+						<i class="nameOnline">swan</i>
+						<i class="nameOnline">yy</i>
+						<i class="nameOnline">李兰鸿</i>
+						<i class="nameOnline">rq</i>
+						<i class="nameOnline">yy</i>
+					</span> -->
+				</div>
+				<div id="contentBox">
+					<!-- <section class="system J-mjrlinkWrap J-cutMsg">
+						<div class="msg-system">we 加入了聊天室</div>
+					</section>
+					<section class="user">
+						<div>asf</div><span>we</span>
+					</section> -->
+				</div>
 			</div>
 			<div class="input-box">
 				<div class="input">

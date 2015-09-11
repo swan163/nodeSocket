@@ -11,10 +11,13 @@
 	
 	w.CHAT = {
 		msgObj:d.getElementById("message"),
+		contentBox : d.getElementById("contentBox"),
 		screenheight:w.innerHeight ? w.innerHeight : dx.clientHeight,
 		username:null,
 		userid:null,
 		socket: null,
+		// socket : io.connect('ws://100.84.92.125:3000'),
+		nameval : d.getElementById("username").value,
 		//让浏览器滚动条保持在最低部
 		scrollToBottom:function(){
 			w.scrollTo(0, this.msgObj.clientHeight);
@@ -43,6 +46,8 @@
 		//更新系统消息，本例中在用户加入、退出的时候调用
 		updateSysMsg:function(o, action){
 			//当前在线用户列表
+			console.log(o.nameexist,"===")
+			console.log(o.onlineUsers,o.onlineCount)
 			var onlineUsers = o.onlineUsers;
 			//当前在线人数
 			var onlineCount = o.onlineCount;
@@ -53,16 +58,20 @@
 			var userhtml = document.createElement('span');
 			userhtml.className = 'userName';
 			var separator = '';
+			var box = '';
 			for(key in onlineUsers) {
 		        if(onlineUsers.hasOwnProperty(key)){
 					// userhtml += separator+onlineUsers[key];
-					userhtml.innerHTML += separator+onlineUsers[key];
-					separator = '、';
+					var nameDom = document.createElement('i');
+					nameDom.className = 'nameOnline';
+					nameDom.innerHTML += separator+onlineUsers[key];
+					// separator = '、';
+					userhtml.appendChild(nameDom);
 				}
 		    }
-		    console.log(userhtml)
+		    // console.log(userhtml)
 			// d.getElementById("onlinecount").innerHTML = '当前共有 '+ onlineCount +' 人在线，在线列表：' + userhtml;
-			d.getElementById("onlinecount").innerHTML = '当前共有 '+ onlineCount +' 人在线，在线列表：';
+			d.getElementById("onlinecount").innerHTML = '<p class="lis-title">群成员( '+ onlineCount +')';
 			d.getElementById("onlinecount").appendChild(userhtml)
 			
 			//添加系统消息
@@ -74,19 +83,48 @@
 			var section = d.createElement('section');
 			section.className = 'system J-mjrlinkWrap J-cutMsg';
 			section.innerHTML = html;
-			this.msgObj.appendChild(section);	
+			this.contentBox.appendChild(section);	
 			this.scrollToBottom();
 		},
-		//第一个界面用户提交用户名
+		//第一个界面用户提交用户名(登录)
 		usernameSubmit:function(){
 			var username = d.getElementById("username").value;
+			// this.socket = io.connect('ws://100.84.92.125:3000');
 			if(username != ""){
-				d.getElementById("username").value = '';
-				d.getElementById("loginbox").style.display = 'none';
-				d.getElementById("chatbox").style.display = 'block';
+				this.socket.on('submit', function(o) {
+					// alert(o.nameexist+"===");
+					if (o.nameexist) {
+						alert("重新输入,已有用户存在");
+						return;
+					} else {
+						d.getElementById("username").value = '';
+						d.getElementById("loginbox").style.display = 'none';
+						d.getElementById("chatbox").style.display = 'block';
+					}
+				});
 				this.init(username);
 			}
 			return false;
+		},
+		// 注册
+		regist : function() {
+			if(this.nameval != "") {
+				this.socket = io.connect('ws://100.84.92.125:3000');
+				this.socket.on('submit', function(o) {
+					// alert(o.nameexist+"===");
+					if (o.nameexist) {
+						alert("重新输入,已有用户存在");
+						return;
+					} else {
+						d.getElementById("username").value = '';
+						d.getElementById("loginbox").style.display = 'none';
+						d.getElementById("chatbox").style.display = 'block';
+						this.init(username);
+					}
+				});
+			} else {
+				alert("不能为空")
+			}
 		},
 		init:function(username){
 			/*
@@ -101,7 +139,7 @@
 			this.scrollToBottom();
 			
 			//连接websocket后端服务器
-			this.socket = io.connect('ws://100.84.92.125:3000');
+			// this.socket = io.connect('ws://100.84.92.125:3000');
 			
 			//告诉服务器端有用户登录
 			this.socket.emit('login', {userid:this.userid, username:this.username});
@@ -130,7 +168,7 @@
 					section.className = 'service';
 					section.innerHTML = usernameDiv + contentDiv;
 				}
-				CHAT.msgObj.appendChild(section);
+				CHAT.contentBox.appendChild(section);
 				CHAT.scrollToBottom();	
 			});
 
@@ -150,4 +188,8 @@
 			CHAT.submit();
 		}
 	};
+
+	d.getElementById("registBtn").onclick = function() {
+		CHAT.regist();
+	}
 })();
