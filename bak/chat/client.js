@@ -86,61 +86,23 @@
 			this.contentBox.appendChild(section);	
 			this.scrollToBottom();
 		},
-
-		tipsHtml : function(name, action) {
-			var html = '';
-			html += '<div class="msg-system">';
-			html += name;
-			html += (action == 'login') ? ' 加入了聊天室' : ' 退出了聊天室';
-			html += '</div>';
-			var section = d.createElement('section');
-			section.className = 'system J-mjrlinkWrap J-cutMsg';
-			section.innerHTML = html;
-			this.contentBox.appendChild(section);
-			this.scrollToBottom();
-		},
-
-		//登录
+		//第一个界面用户提交用户名(登录)
 		usernameSubmit:function(){
-			var $this = this;
-			var userInput = d.getElementById("username");
-			var username = userInput.value;
-			if(username != "") {
-				var _socket = io.connect('ws://100.84.92.125:3000');
-				_socket.emit('login', {userName:username});
-				_socket.on("noRecord", function() {
-					alert("此用户不存在");
-					userInput.select();
-					return;
+			var username = d.getElementById("username").value;
+			// this.socket = io.connect('ws://100.84.92.125:3000');
+			if(username != ""){
+				this.socket.on('submit', function(o) {
+					// alert(o.nameexist+"===");
+					if (o.nameexist) {
+						alert("重新输入,已有用户存在");
+						return;
+					} else {
+						d.getElementById("username").value = '';
+						d.getElementById("loginbox").style.display = 'none';
+						d.getElementById("chatbox").style.display = 'block';
+					}
 				});
-				_socket.on("loginSuccess",function(arg) {
-					alert("登录成功");
-					d.getElementById("username").value = '';
-					d.getElementById("loginbox").style.display = 'none';
-					d.getElementById("chatbox").style.display = 'block';
-					$this.tipsHtml(arg.username, 'login');
-					return;
-				});
-				var userhtml = document.createElement('span');
-				userhtml.className = 'userName';
-				_socket.on("allUser", function(arg) {
-					var olcount = d.getElementById("onlinecount");
-					for(key in arg.user) {
-				        if(arg.user.hasOwnProperty(key)){
-							var nameDom = document.createElement('i');
-							nameDom.className = 'nameOnline';
-							nameDom.innerHTML += separator+arg.user[key];
-							userhtml.appendChild(nameDom);
-						}
-				    }
-
-					olcount.innerHTML = '<p class="lis-title">群成员( '+ onlineCount +')';
-					olcount.appendChild(userhtml)
-				})
-			} else {
-				alert("不能为空");
-				userInput.focus();
-				return;
+				this.init(username);
 			}
 			return false;
 		},
@@ -149,16 +111,27 @@
 			var txtVal = d.getElementById("username").value;
 			if(txtVal != "") {
 				var _socket = io.connect('ws://100.84.92.125:3000');
-				_socket.emit('submit', {userName:txtVal});
-				_socket.on("repeat", function() {
-					alert("用户名已存在----")
-				});
-				_socket.on("regSuccess",function() {
-					alert("注册成功");
-					d.getElementById("username").value = '';
-					d.getElementById("loginbox").style.display = 'none';
-					d.getElementById("chatbox").style.display = 'block';
+				console.log("1");
+				/*_socket.on("testSubmit", function(data)	{
+					console.log(data,"client");
+					_socket.emit("submitEvent", {my:"Oup"})
 				})
+				return;*/
+				_socket.on('testSubmit', function(o) {
+					alert(o.nameexist+"===");
+					console.log(o)
+					_socket.emit("submitEvent", {userid:this.userid, username:txtVal})
+					
+					if (o.nameexist) {
+						alert("重新输入,已有用户存在");
+						return;
+					} else {
+						d.getElementById("username").value = '';
+						d.getElementById("loginbox").style.display = 'none';
+						d.getElementById("chatbox").style.display = 'block';
+						this.init(username);
+					}
+				});
 			} else {
 				alert("不能为空")
 			}
@@ -228,8 +201,5 @@
 
 	d.getElementById("registBtn").onclick = function() {
 		CHAT.regist();
-	}
-	d.getElementById("loginBtn").onclick = function() {
-		CHAT.usernameSubmit();
 	}
 })();
