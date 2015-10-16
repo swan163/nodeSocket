@@ -163,13 +163,13 @@
 			this.socket.on('logout', function(o){
 				CHAT.updateSysMsg(o, 'logout');
 			});
-			
+
 			//监听消息发送
 			this.socket.on('message', function(obj){
 				var isme = (obj.userid == CHAT.userid) ? true : false;
 				var contentDiv = '<div>'+obj.content+'</div>';
 				var usernameDiv = '<span>'+obj.username+'</span>';
-				
+
 				var section = d.createElement('section');
 				if(isme){
 					section.className = 'user';

@@ -8,7 +8,7 @@
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" name="viewport">
 <title>多人聊天室</title>
 <link rel="stylesheet" type="text/css" href="./style.css" />
-<script src="http://100.84.92.125:3000/socket.io/socket.io.js"></script>
+<script src="http://100.84.92.125:2000/socket.io/socket.io.js"></script>
 
 </head>
 <body>
@@ -54,17 +54,117 @@
 				</div>
 			</div>
 			<div class="input-box">
-				<div class="input">
-					<input type="text" maxlength="140" placeholder="请输入聊天内容，按Ctrl提交" id="content" name="content">
-					<!-- <div id="chatEdit" contentEditable="true"></div> -->
+				<div class="flex">
+					<span class="face-box" id="face-btn">
+						<i class="eyes"></i>
+					</span>
+					<span class="pic" id="pic-btn">
+						<i class="pics"></i>
+						<input type="file" class="fileBtn" id="faceImg">
+					</span>
+					<div class="face-list" id="faceList">
+						<p class="fls">
+							<span class="items">
+								<img src="./face/applause.png">
+							</span>
+							<span class="items">
+								<img src="./face/bluck.png">
+							</span>
+							<span class="items">
+								<img src="./face/cool.png">
+							</span>
+							<span class="items">
+								<img src="./face/crazy.png">
+							</span>
+							<span class="items">
+								<img src="./face/cry.png">
+							</span>
+							<span class="items">
+								<img src="./face/crying.png">
+							</span>
+							<span class="items">
+								<img src="./face/despise.png">
+							</span>
+							<span class="items">
+								<img src="./face/dizzy.png">
+							</span>
+							<span class="items">
+								<img src="./face/doubt.png">
+							</span>
+							<span class="items">
+								<img src="./face/embar.png">
+							</span>
+						</p>
+						<p class="fls">
+							<span class="items">
+								<img src="./face/huffy.png">
+							</span>
+							<span class="items">
+								<img src="./face/kiss.png">
+							</span>
+							<span class="items">
+								<img src="./face/lewd.png">
+							</span>
+							<span class="items">
+								<img src="./face/lol.png">
+							</span>
+							<span class="items">
+								<img src="./face/naughty.png">
+							</span>
+							<span class="items">
+								<img src="./face/poor.png">
+							</span>
+							<span class="items">
+								<img src="./face/shocked.png">
+							</span>
+							<span class="items">
+								<img src="./face/shutup.png">
+							</span>
+							<span class="items">
+								<img src="./face/shy.png">
+							</span>
+							<span class="items">
+								<img src="./face/sleepy.png">
+							</span>
+						</p>
+						<p class="fls">
+							<span class="items">
+								<img src="./face/sweat.png">
+							</span>
+							<span class="items">
+								<img src="./face/titter.png">
+							</span>
+							<span class="items">
+								<img src="./face/tongue.png">
+							</span>
+							<span class="items">
+								<img src="./face/vomit.png">
+							</span>
+						</p>
+					</div>
 				</div>
-				<div class="action">
-					<button type="button" id="mjr_send" onclick="CHAT.submit();">提交</button>
+				<div class="flex alc">
+					<div class="input">
+						<!-- <input type="text" maxlength="140" placeholder="请输入聊天内容，按Ctrl提交" id="content" name="content"> -->
+						<div id="chatEdit" contentEditable="true" class="chatEdit"></div>
+					</div>
+					<div class="action">
+						<button type="button" id="mjr_send" onclick="CHAT.submit();">提交</button>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<section class="mask-box" id="maskMod">
+	<div class="mask-wrap">
+		<img src="" id="glassImg">
+	</div>
+</section>
+
+
+<script type="text/javascript" src="./jquery.js"></script>
 <script type="text/javascript" src="./client.js"></script>
 </body>
 </html>
