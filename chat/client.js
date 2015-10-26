@@ -53,8 +53,14 @@
 		//让浏览器滚动条保持在最低部
 		
 		logout:function(){
-			//this.socket.disconnect();
-			location.reload();
+			var $this = this;
+			if(confirm("确定退出么")) {
+				console.log($this.username,"log")
+				var json = {};
+				json["userName"] = $this.username
+				$this._socket.emit('exit', json);
+				sessionStorage.removeItem("userName");
+			}
 		},
 		//提交聊天消息内容
 		submit:function(){
@@ -62,11 +68,10 @@
 			if(content != ''){
 				var obj = {
 					userid: this.userid,
-					username: this.username,
+					userName: this.username,
 					content: content,
 					to : to,
 				};
-				
 				this._socket.emit('message', obj);
 				baseInit.chatEdit.innerHTML = '';
 				baseInit.scrollToBottom();
@@ -80,42 +85,43 @@
 				var data = obj.data;
 				var times = obj.times;
 				var isme = (data.userid == CHAT.userid) ? true : false;
-				var contentDiv = '<div>'+data.content+'</div>';
-				var usernameDiv = '<span>'+data.username+'</span>';
-				var time = '<p>'+ times +'</p>'
+				var infoReq = d.createElement('div');
+				infoReq.className = 'infoReq';
+				var contentDiv = '<div class="cet">'+data.content+'</div>';
+				var usernameDiv = '<span class="usern">'+data.userName+'</span>';
+				var time = '<p class="time">'+ times +'</p>'
 				
 				var section = d.createElement('section');
+				
+
+				var _html = "";
+				infoReq.innerHTML = time + contentDiv;
+				console.log(infoReq.innerHTML)
+				if(data.to == 'all') {
+					_html = usernameDiv;
+				} else if(data.userName == $this.username) {
+					_html = '<span class="user">我对</span>' + data.to;
+				} else if(data.to == $this.username) {
+					_html = usernameDiv + '对我';
+				}
+				section.innerHTML = _html;
+				// section.appendChild(infoReq)
 				if(isme){
 					section.className = 'user';
+					// $(section).appendChild(infoReq)
+					$(infoReq).prependTo($(section));
 				} else {
 					section.className = 'service';
 				}
-
-				var _html = "";
-				var losName = localStorage.getItem("curName");
-				losName = losName || $this.username;
-				if(data.to == 'all') {
-					_html = time + usernameDiv + '说' + contentDiv;
-					section.innerHTML = _html;
-				} else if(data.username == $this.username) {
-					_html = time + '<span>我对</span>' + data.to + '说' + contentDiv;
-					section.innerHTML = _html;
-				} else if($this.username == losName) {
-					_html = time + usernameDiv + '对我' + '说' + contentDiv;
-					section.innerHTML = _html;
-				}
-				console.log(data.to,$this.username)
+				console.log(obj.userName, obj.userId)
 				baseInit.contentBox.appendChild(section);
 			});
 			
 			baseInit.scrollToBottom();
-		},
-		
-
+		},		
 		updateInfo : function(user, num) {
 			var userhtml = document.createElement('span');
 			userhtml.className = 'userName';
-			// userhtml.innerHTML = '<i class="nameOnline">所有人</i>';
 			var olcount = d.getElementById("onlinecount");
 			var separator = '';
 			for(key in user) {
@@ -133,7 +139,6 @@
 			olcount.innerHTML = '<p class="lis-title">群成员( '+ num +')</p>';
 			olcount.appendChild(userhtml);
 		},
-
 		//登录
 		usernameSubmit:function(){
 			var $this = this;
@@ -142,6 +147,8 @@
 			if(username != "") {
 				this.username = username;
 				this._socket.emit('login', {userName:this.username});
+				this._socket.emit('record');
+				sessionStorage.setItem("userName",this.username);
 			} else {
 				alert("不能为空");
 				userInput.focus();
@@ -189,13 +196,21 @@
 				$this.userInput.select();
 				return;
 			});
+			var sesage = sessionStorage.getItem("userName");
+			if(sesage) {
+				this.username = sesage;
+				this._socket.emit('login', {userName:sesage});
+				this._socket.emit('record');
+			} else {
+				d.getElementById("loginbox").style.display = 'block';
+			}
 			this._socket.on("loginSuccess",function(arg) {
 				// alert("登录成功");
 				d.getElementById("username").value = '';
 				d.getElementById("loginbox").style.display = 'none';
 				d.getElementById("chatbox").style.display = 'block';
-				baseInit.tipsHtml(arg.username, 'login');
-				d.getElementById("showusername").innerHTML = arg.username;
+				baseInit.tipsHtml(arg.userName, 'login');
+				d.getElementById("showusername").innerHTML = arg.userName;
 				return;
 			});
 			
@@ -211,6 +226,31 @@
 			this._socket.on("regSuccess",function() {
 				alert("注册成功");
 			});
+
+			// 退出
+			$("#logout").click(function() {
+				$this.logout();
+			});
+			$this._socket.on("logout", function(arg) {
+				baseInit.tipsHtml(arg.userName, 'logout');
+				d.getElementById("loginbox").style.display = 'block';
+				d.getElementById("chatbox").style.display = 'none';
+			});
+			$this._socket.on('recodMsg', function(arg) {
+				var html = "";
+				for(var i = 0; i < arg.content.length; i++) {
+					var section = d.createElement('section');
+					section.className = 'history';
+					var contentDiv = '<div>'+ arg.content[i] +'</div>';
+					var usernameDiv = '<span class="usern">'+ arg.userName[i] +'</span>';
+					var time = '<p>'+ arg.times[i] +'</p>';
+					
+					html = time + usernameDiv + '说:' + contentDiv;
+					section.innerHTML = html;
+					baseInit.contentBox.appendChild(section);
+				}
+			})
+
 
 			this.initMsg();
 			var screeHeight = document.documentElement.clientHeight;
@@ -278,23 +318,25 @@
 		dnlOneToOne : function () {
 			var $this = this;
 			// 打开新窗口
-			$("#onlinecount").delegate(".nameOnline", "dblclick", function() {
+			$("#onlinecount").delegate(".nameOnline", "click", function() {
 				var $ts = $(this);
-				if($ts.html() == CHAT.username) {
+				if($ts.find(".exit").length > 0) return;
+				var str = '<em class="exit" id="exit">退出</em>';
+				var crHtml = $ts.html().replace(/<em[^]]*<\/em>/g,'');
+				if(crHtml == CHAT.username) {
 					alert("自己不能对自己发起私聊");
 					return;
 				};
 
-				to = $ts.html();
+				to = crHtml;
 				$ts.addClass("clienTag");
-				$ts.append('<em class="exit" id="exit">退出</em>');
-				localStorage.setItem("curName",to);
+				$ts.append(str);
 			});
-			$("#onlinecount").delegate("#exit", "click", function() {
+			$("#onlinecount").delegate("#exit", "click", function(e) {
+				e.stopPropagation();
 				to = 'all';
 				$(this).parent().removeClass("clienTag");
 				$(this).remove();
-				localStorage.removeItem("curName");
 			});
 		},
 		init : function() {

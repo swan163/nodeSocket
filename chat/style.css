@@ -308,36 +308,14 @@ section.top-message>div:before,
   border-right: 7px solid #fff;
   border-bottom: 4px solid transparent;
 }
-/*
-div.robot>div:after,
-section.robot>div:after,
-section.service>div:after,
-section.top-message>div:after,
-.system .windowContent:after {
-  border-color:rgba(227, 236, 255, 0);
-  border-right-color:#c5e4fa;
-  border-width:8px;
-  top:15px;
-  margin-top:-8px;
-}
 
-div.robot>div:before,
-section.robot>div:before,
-section.service>div:before,
-section.top-message>div:before,
-.system .windowContent:before {
-  border-color:rgba(165, 181, 213, 0);
-  border-right-color:#fff;
-  border-width:9px;
-  top:15px;
-  margin-top:-9px;
-}
-  */
-section.user {
+.user {
   float:right;
   text-align:right;
+  position: relative;
+  display: -webkit-box;
 }
-section.user>div {
+.cet {
   max-width: 225px;
   position:relative;
   display: inline-block;
@@ -351,27 +329,8 @@ section.user>div {
   vertical-align: top;
   word-break: break-all;
 }
- /*
-section.user>div:after,
-section.user>div:before {
-  left:100%;
-  border:solid transparent;
-  content:" ";
-  height:0;
-  width:0;
-  position:absolute;
-  pointer-events:none;
-}
-
-section.user>div:after {
-  border-color:rgba(255, 255, 255, 0);
-  border-left-color:#e3e3e3;
-  border-width:8px;
-  top:15px;
-  margin-top:-8px;
-}
-  */
-section.user>div:before {
+ 
+.cet:before {
     content:"";
     position: absolute;
     right: -5px;
@@ -396,20 +355,11 @@ header {
   margin-bottom: 0;
 }
 
-.welcome span, .user>span {
+.welcome span{
   font-weight:700;
   color:#f60;
 }
 
-.user>span {
-
-  font-weight:normal;
-	font-size:14px;
-	color:#f60;
-	 max-width: 45px;
-    height: 36px;
-	overflow: hidden;
-}
 
 .robot>span, .service>span {
 
@@ -1214,4 +1164,25 @@ section.evaluateSec .answer{
   color:#f80;
   margin:0 5px;
   font-weight: 700;
+}
+.history{
+  display:-webkit-box;
+}
+.usern{
+  -webkit-box-flex:0;
+  display: block;
+}
+.infoReq{
+  -webkit-box-flex:1;
+}
+
+.time{
+  font-size:12px;
+  color:#666;
+}
+.user .usern{
+  font-weight:700;
+  color:#f60;
+  margin-top:-3px;
+  margin-left:5px;
 }
